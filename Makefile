@@ -1,4 +1,5 @@
 include .env
+export
 
 tf-remote-state:
 	@echo "[+] Provisioning infrastructure"
@@ -7,7 +8,7 @@ tf-remote-state:
 
 tf-apply:
 	@echo "[+] Provisioning infrastructure"
-	terraform init && terraform apply
+	terraform init -reconfigure && terraform apply
 
 tf-destroy:
 	@echo "[+] Destroying infrastructure"
@@ -16,10 +17,3 @@ tf-destroy:
 tf-output:
 	@echo "[+] Terraform outpus"
 	terraform output
-
-provision-graylog:
-	@echo "[+] Provisioning graylog"
-	@GRAYLOG_IP_ADDR=$$(cd infra; terraform output | grep graylog_public | cut -d " " -f 3); \
-		cd conf-mngt ; \
-		echo "$${GRAYLOG_IP_ADDR}" ; \
-		ansible-playbook -i "$${GRAYLOG_IP_ADDR}", graylog.yml

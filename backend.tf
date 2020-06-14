@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "tf-projectname"
-    key    = "demo"
+    bucket = "tf-remotestate-s3demo"
+    key    = "tfstate"
     region = "us-west-2"
   }
 }

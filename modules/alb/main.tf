@@ -1,3 +1,5 @@
+### ALB 
+
 resource "aws_lb" "alb" {
   name               = format("%s-lb", var.name)
   internal           = false
@@ -16,7 +18,7 @@ resource "aws_lb_listener" "listener" {
   load_balancer_arn = aws_lb.alb.arn
 
   protocol = "HTTP"
-  port     = 80
+  port     = var.alb_listener_port
 
   default_action {
     type             = "forward"
@@ -28,26 +30,26 @@ resource "aws_lb_target_group" "alb_tg" {
   name   = format("%s-alb-tg", var.name)
   vpc_id = var.vpc_id
 
-  port        = 80
+  port        = var.app_port
   protocol    = "HTTP"
   target_type = "instance"
 
   health_check {
-    interval            = 30
-    port                = 80
-    protocol            = "HTTP"
-    timeout             = 10
-    healthy_threshold   = 3
-    unhealthy_threshold = 3
-    matcher             = "200-299"
-    path                = "/status.html"
+    protocol = "HTTP"
+    matcher  = "200-299"
+    port     = var.app_port
+    path     = var.app_health_check_path
+
+    interval            = var.alb_check_interval
+    timeout             = var.alb_check_timeout
+    healthy_threshold   = var.alb_threshold_healty
+    unhealthy_threshold = var.alb_threshold_unhealty
   }
 }
 
 resource "aws_lb_target_group_attachment" "attach_ec2" {
-  #count           = length(aws_instance.web.*)
   count            = length(var.web_instances_ids)
   target_group_arn = aws_lb_target_group.alb_tg.arn
   target_id        = tolist(var.web_instances_ids)[count.index]
-  port             = 80
+  port             = var.app_port
 }

@@ -1,13 +1,11 @@
-### Locals
-
-locals {
-  outside_cidr = "0.0.0.0/0"
-}
-
 ### Data
 
 data "template_file" "user_data" {
-  template = file("templates/provisioner.sh.tpl")
+  template = file("${path.module}/templates/provisioner.sh.tpl")
+}
+
+data "aws_vpc" "vpc" {
+  id = var.vpc_id
 }
 
 ### Web resources 
@@ -37,18 +35,18 @@ resource "aws_security_group" "web" {
   vpc_id = var.vpc_id
 
   ingress {
-    to_port     = 22
-    from_port   = 22
+    to_port     = var.ssh_port
+    from_port   = var.ssh_port
     protocol    = "tcp"
-    cidr_blocks = [var.vpc_cidr]
+    cidr_blocks = [var.ssh_sg_access_cidr]
     description = "SSH open to the VPCs CIDR"
   }
 
   ingress {
-    to_port     = 80
-    from_port   = 80
+    to_port     = var.app_port
+    from_port   = var.app_port
     protocol    = "tcp"
-    cidr_blocks = [local.outside_cidr]
+    cidr_blocks = [var.app_sg_access_cidr]
     description = "HTTP open to the world"
   }
 
@@ -56,6 +54,11 @@ resource "aws_security_group" "web" {
     to_port     = 0
     from_port   = 0
     protocol    = -1
-    cidr_blocks = [local.outside_cidr]
+    cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = merge(
+    var.general_tags,
+    { Name = format("%s-sg-web", var.name) }
+  )
 }

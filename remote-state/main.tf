@@ -1,9 +1,12 @@
+variable "aws_region" { default = "" }
+variable "remote_state_s3_bucket" { default = "" }
+
 provider "aws" {
-  region = "us-west-2"
+  region = var.aws_region
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "tf-projectname"
+  bucket = var.remote_state_s3_bucket
 
   versioning {
     enabled = true
