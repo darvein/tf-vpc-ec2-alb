@@ -49,5 +49,5 @@ If you need to clean up or destroy everything, you can run:
 
 - No IPv6 Support
 - No NACLs custom configuration in VPC
-- Due to TF limitation, the Remote State S3 bucket used for TF Backend needs to be manually updated if you want to change it in `backend.tf` or you can just leave it as default: https://github.com/hashicorp/terraform/issues/13022
-- Due to security concerns, you have to manualy remove the S3 Bucket `tf-remotestate-s3demo` which holds the infrastructure information.
+- Due to TF limitation, the Remote State S3 bucket used for TF Backend needs to be manually updated if you want to change it in `backend.tf` or you can just leave it as default as it is now. Reference: https://github.com/hashicorp/terraform/issues/13022
+- Due to security concerns, while cleaning up you will have to manualy remove the S3 Bucket `tf-remotestate-s3demo` which holds the infrastructure information.
