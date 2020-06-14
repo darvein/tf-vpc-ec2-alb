@@ -1,14 +1,14 @@
 resource "aws_lb" "alb" {
-  name               = format("%s-lb", var.project_name)
+  name               = format("%s-lb", var.name)
   internal           = false
   load_balancer_type = "application"
 
-  subnets         = tolist(data.aws_subnet_ids.public.ids)
-  security_groups = [aws_security_group.web.id]
+  subnets         = tolist(var.public_subnet_ids)
+  security_groups = [var.web_sg_id]
 
   tags = merge(
-    local.general_tags,
-    { Name = format("%s-alb", var.project_name) }
+    var.general_tags,
+    { Name = format("%s-alb", var.name) }
   )
 }
 
@@ -25,8 +25,8 @@ resource "aws_lb_listener" "listener" {
 }
 
 resource "aws_lb_target_group" "alb_tg" {
-  name   = format("%s-alb-tg", var.project_name)
-  vpc_id = aws_vpc.vpc.id
+  name   = format("%s-alb-tg", var.name)
+  vpc_id = var.vpc_id
 
   port        = 80
   protocol    = "HTTP"
@@ -45,8 +45,9 @@ resource "aws_lb_target_group" "alb_tg" {
 }
 
 resource "aws_lb_target_group_attachment" "attach_ec2" {
-  count            = length(aws_instance.web.*)
+  #count           = length(aws_instance.web.*)
+  count            = length(var.web_instances_ids)
   target_group_arn = aws_lb_target_group.alb_tg.arn
-  target_id        = tolist(aws_instance.web.*.id)[count.index]
+  target_id        = tolist(var.web_instances_ids)[count.index]
   port             = 80
 }

@@ -22,6 +22,6 @@ data "aws_ami" "ubuntu20" {
 #tags   = { Tier = "private" }
 #}
 
-data "template_file" "user_data" {
-  template = file("templates/provisioner.sh.tpl")
-}
+#data "template_file" "user_data" {
+#template = file("templates/provisioner.sh.tpl")
+#}
