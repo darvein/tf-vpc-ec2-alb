@@ -4,11 +4,11 @@ This project deploy a set of AWS Resources to get a simple web server running be
 
 ## Setup and configuration
 
-Before deploying the infrastructure resources you can tune or modify it by editing the file `.env` which contains variables that are later passed to Terraform via Make.
+Before deploying the infrastructure resources you can tune or modify it by editing the file `.env` which contains variables that are later passed to Terraform.
 
 You can also leave the `.env` file as it is which already contains default valules.
 
-Once you are done with your custom configuration make sure to provide the Needed AWS Credentials either by setting up your `~/.aws/credentials`  file, passing the `export AWS_PROFILE=<profile name>` environment variable, or just simple passing the AWS Keys and Secret keys via environment variables, more information: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html 
+Once you are done with your custom configuration make sure to provide the needed AWS Credentials either by setting up your `~/.aws/credentials`  file, passing the `export AWS_PROFILE=<profile name>` environment variable, or just simple passing the AWS Keys and Secret keys via environment variables, more information: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html 
 
 ## What is going to be deployed:
 
@@ -23,27 +23,37 @@ If you lave the configuration by default in `.env`, then you will get:
 
 Before deploying the whole stack, you will need a place to store the infrastructure state, for this purpose just run:
 
-`make tf-remote-state`
+```
+export $(cat .env | xargs)
 
+cd remote-state
+terraform init
+terraform apply
+cd ../
+```
 Then you will have deployed an AWS S3 bucket where the infrastructure state is going to be stored for Terraform operations.
 
 ## Deployment of AWS Resources
 
 Now you have everything in place, you can just run:
+```
+export $(cat .env | xargs)
 
-`make tf-apply`
-
+terraform init
+terraform plan
+terraform apply
+```
 Once finished you will have all the infrastructure deployed. You will notice as part of the output you will get some relevant information needed like the LB Endpoint, the subnets CIDRs, the ssh private key, etc.
 
 If you later need to check again the information output you can just run:
 
-`make tf-output`
+`terraform output`
 
 ## Clean up
 
 If you need to clean up or destroy everything, you can run:
 
-`make tf-destroy`
+`terraform destroy`
 
 ## Limitations and considerations
 
